@@ -1,5 +1,6 @@
 import json
 import pathlib
+import sys
 
 from note_manager import utils
 from note_manager.models import note
@@ -21,23 +22,34 @@ class NoteManager:
             return
 
         with open(self._filepath, "r", encoding="utf-8") as file:
-            json_notes = json.load(file)
-            for json_note in json_notes:
-                n = note.Note(
-                    id=json_note["id"],
-                    title=json_note["title"],
-                    content=json_note["content"],
-                    tags=json_note.get("tags", []),
-                    created_at=utils.str_to_datetime(json_note["created_at"]),
-                    updated_at=utils.str_to_datetime(json_note["updated_at"]),
-                )
-                self._notes.append(n)
+            try:
+                json_notes = json.load(file)
+                for json_note in json_notes:
+                    n = note.Note(
+                        id=json_note["id"],
+                        title=json_note["title"],
+                        content=json_note["content"],
+                        tags=json_note.get("tags", []),
+                        created_at=utils.str_to_datetime(json_note["created_at"]),
+                        updated_at=utils.str_to_datetime(json_note["updated_at"]),
+                    )
+                    self._notes.append(n)
+            except json.JSONDecodeError as err:
+                print(f"Ошибка: {err}", file=sys.stderr)
+                # создаем резервную копию
+                backup_path = self._filepath.with_name(self._filepath.name + ".bak")
+                self._filepath.replace(backup_path)
 
     def _save(self):
         """
         Сохранение данных в JSON файл (с конвертацией дат в строки).
         """
-        with open(self._filepath, "w", encoding="utf-8") as file:
+        tmp_path = self._filepath.with_name(self._filepath.name + ".tmp")
+        with open(
+            tmp_path,
+            "w",
+            encoding="utf-8",
+        ) as file:
             notes = []
             for n in self._notes:
                 notes.append(
@@ -51,6 +63,7 @@ class NoteManager:
                     }
                 )
             json.dump(notes, file, ensure_ascii=False)
+        tmp_path.replace(self._filepath)
 
     def add_note(self, title: str, content: str, tags: list[str] | None = None):
         """
