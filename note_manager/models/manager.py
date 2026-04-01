@@ -102,7 +102,26 @@ class NoteManager:
         :param str content: новое содержимое заметки (опционально)
         :param list[str] tags: новые тэги заметки (опционально)
         """
-        pass
+        updated = False
+        for i, n in enumerate(self._notes):
+            if n.id != id:
+                continue
+            new_title = title if title is not None else n.title
+            new_content = content if content is not None else n.content
+            new_tags = tags if tags is not None else n.tags
+            updated_n = note.Note(
+                id=id,
+                title=new_title,
+                content=new_content,
+                tags=new_tags,
+                created_at=n.created_at,
+            )
+            self._notes[i] = updated_n
+            updated = True
+            break
+
+        if updated:
+            self._save()
 
     def delete_note(self, id: int):
         """
