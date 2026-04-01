@@ -72,7 +72,11 @@ class NoteManager:
         :param str content: текст заметки
         :param list[str] tags: тэги заметки (опционально)
         """
-        pass
+        new_id = max(n.id for n in self._notes) if self._notes else 1
+        new_tags = tags if tags else []
+        new_note = note.Note(id=new_id, title=title, content=content, tags=new_tags)
+        self._notes.append(new_note)
+        self._save()
 
     def get_note(self, id: int) -> note.Note | None:
         """
@@ -81,7 +85,7 @@ class NoteManager:
         :param int id: id заметки
         :return: note.Note | None
         """
-        pass
+        return next((n for n in self._notes if n.id == id), None)
 
     def update_note(
         self,
