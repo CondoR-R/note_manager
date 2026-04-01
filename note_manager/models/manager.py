@@ -1,0 +1,120 @@
+import json
+import pathlib
+
+from note_manager import utils
+from note_manager.models import note
+
+
+class NoteManager:
+    def __init__(self, filepath: pathlib.Path):
+        self._filepath = filepath
+        self._notes: list[note.Note]
+
+    def _load(self):
+        """
+        Загрузка и парсинг данных из JSON файла.
+        Преобразование словарей в note.Note.
+        """
+        self._notes = []
+
+        if not self._filepath.exists():
+            return
+
+        with open(self._filepath, "r", encoding="utf-8") as file:
+            json_notes = json.load(file)
+            for json_note in json_notes:
+                n = note.Note(
+                    id=json_note["id"],
+                    title=json_note["title"],
+                    content=json_note["content"],
+                    tags=json_note.get("tags", []),
+                    created_at=utils.str_to_datetime(json_note["created_at"]),
+                    updated_at=utils.str_to_datetime(json_note["updated_at"]),
+                )
+                self._notes.append(n)
+
+    def _save(self):
+        """
+        Сохранение данных в JSON файл (с конвертацией дат в строки).
+        """
+        with open(self._filepath, "w", encoding="utf-8") as file:
+            notes = []
+            for n in self._notes:
+                notes.append(
+                    {
+                        "id": n.id,
+                        "title": n.title,
+                        "content": n.content,
+                        "tags": n.tags,
+                        "created_at": utils.datetime_to_str(n.created_at),
+                        "updated_at": utils.datetime_to_str(n.updated_at),
+                    }
+                )
+            json.dump(notes, file, ensure_ascii=False)
+
+    def add_note(self, title: str, content: str, tags: list[str] | None = None):
+        """
+        Добавление заметки. Сохранение нового списка заметок в JSON.
+        :param str title: заголовок заметки
+        :param str content: текст заметки
+        :param list[str] tags: тэги заметки (опционально)
+        """
+        pass
+
+    def get_note(self, id: int) -> note.Note | None:
+        """
+        Получение заметки по id. Возвращает заметку с
+        указанным id или None.
+        :param int id: id заметки
+        :return: note.Note | None
+        """
+        pass
+
+    def update_note(
+        self,
+        id: int,
+        title: str | None = None,
+        content: str | None = None,
+        tags: list[str] | None = None,
+    ):
+        """
+        Обновление заметки. Обновляет updated_at для заметки на
+        текущее время, сохраняет новый список заметок в JSON.
+        :param int id: id заметки
+        :param str title: новый заголовок заметки (опционально)
+        :param str content: новое содержимое заметки (опционально)
+        :param list[str] tags: новые тэги заметки (опционально)
+        """
+        pass
+
+    def delete_note(self, id: int):
+        """
+        Удаление заметки. Сохранение нового списка заметок в JSON.
+        :param int id: id заметки
+        """
+        pass
+
+    def get_list_notes(
+        self, sort_by="updated_at", reverse: bool = True
+    ) -> list[note.Note]:
+        """
+        Получения списка всех заметок с сортировкой по определенным
+        параметрам.
+        :param str sort_by: тип сортировки (по умолчанию по updated_at)
+        :param bool reverse: смена направления (по умолчанию True)
+        :return: list[note.Note]
+        """
+        pass
+
+    def search_notes(
+        self, query: str, search_in: set[str] = {"title", "content", "tags"}
+    ) -> list[note.Note]:
+        """
+        Поиск query по заметкам. Возвращает список заметок, в которых
+        содержится query
+        :param str query: запрос для поиска
+        :param set[str] search_in: поля поиска (по умолчанию
+        {"title", "content", "tags"})
+        :return: list[note.Note]
+        """
+        pass

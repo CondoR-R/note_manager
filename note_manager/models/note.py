@@ -1,5 +1,5 @@
 import dataclasses
-import datetime
+import datetime as dt
 
 
 @dataclasses.dataclass()
@@ -7,6 +7,6 @@ class Note:
     id: int
     title: str
     content: str
-    created_at: datetime.datetime = dataclasses.field(default_factory=datetime.now)
-    updated_at: datetime.datetime = dataclasses.field(default_factory=datetime.now)
     tags: list[str] = dataclasses.field(default_factory=list)
+    created_at: dt.datetime = dataclasses.field(default_factory=dt.now)
+    updated_at: dt.datetime = dataclasses.field(default_factory=dt.now)
