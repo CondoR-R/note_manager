@@ -128,7 +128,15 @@ class NoteManager:
         Удаление заметки. Сохранение нового списка заметок в JSON.
         :param int id: id заметки
         """
-        pass
+        deleted = False
+        for i, n in enumerate(self._notes):
+            if n.id != id:
+                continue
+            del self._notes[i]
+            deleted = True
+            break
+        if deleted:
+            self._save()
 
     def get_list_notes(
         self, sort_by="updated_at", reverse: bool = True
