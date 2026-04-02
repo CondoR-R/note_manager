@@ -166,4 +166,26 @@ class NoteManager:
         {"title", "content", "tags"})
         :return: list[note.Note]
         """
-        pass
+        valid_fields = (search_in & {"title", "content", "tags"}) or {
+            "title",
+            "content",
+            "tags",
+        }
+
+        query_notes = []
+        query_lower = query.lower()
+        for n in self._notes:
+            matched = False
+            for field in valid_fields:
+                if field == "tags":
+                    matched = matched or any(
+                        query_lower in tag.lower() for tag in n.tags
+                    )
+                else:
+                    matched = matched or query_lower in getattr(n, field).lower()
+
+                if matched:
+                    break
+            if matched:
+                query_notes.append(n)
+        return query_notes
