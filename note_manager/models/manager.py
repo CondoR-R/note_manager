@@ -2,7 +2,7 @@ import json
 import pathlib
 import sys
 
-from note_manager import utils
+from note_manager import constants, utils
 from note_manager.models import note
 
 
@@ -139,16 +139,21 @@ class NoteManager:
             self._save()
 
     def get_list_notes(
-        self, sort_by="updated_at", reverse: bool = True
+        self,
+        sort_by: constants.SortBy = constants.SortBy.UPDATED_AT,
+        reverse: bool = True,
     ) -> list[note.Note]:
         """
         Получения списка всех заметок с сортировкой по определенным
         параметрам.
-        :param str sort_by: тип сортировки (по умолчанию по updated_at)
+        :param constants.SortBy sort_by: тип сортировки
+        (по умолчанию по updated_at)
         :param bool reverse: смена направления (по умолчанию True)
         :return: list[note.Note]
         """
-        pass
+        notes_copy = self._notes.copy()
+        notes_copy.sort(key=lambda n: getattr(n, sort_by.value), reverse=reverse)
+        return notes_copy
 
     def search_notes(
         self, query: str, search_in: set[str] = {"title", "content", "tags"}
