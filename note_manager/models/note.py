@@ -8,5 +8,5 @@ class Note:
     title: str
     content: str
     tags: list[str] = dataclasses.field(default_factory=list)
-    created_at: dt.datetime = dataclasses.field(default_factory=dt.now)
-    updated_at: dt.datetime = dataclasses.field(default_factory=dt.now)
+    created_at: dt.datetime = dataclasses.field(default_factory=dt.datetime.now)
+    updated_at: dt.datetime = dataclasses.field(default_factory=dt.datetime.now)

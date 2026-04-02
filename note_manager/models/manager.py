@@ -3,13 +3,15 @@ import pathlib
 import sys
 
 from note_manager import constants, utils
-from note_manager.models import note
+
+from . import note
 
 
 class NoteManager:
     def __init__(self, filepath: pathlib.Path):
         self._filepath = filepath
         self._notes: list[note.Note]
+        self._load()
 
     def _load(self):
         """
@@ -72,7 +74,7 @@ class NoteManager:
         :param str content: текст заметки
         :param list[str] tags: тэги заметки (опционально)
         """
-        new_id = max(n.id for n in self._notes) if self._notes else 1
+        new_id = max(n.id for n in self._notes) + 1 if self._notes else 1
         new_tags = tags if tags else []
         new_note = note.Note(id=new_id, title=title, content=content, tags=new_tags)
         self._notes.append(new_note)
